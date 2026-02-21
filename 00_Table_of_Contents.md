@@ -23,6 +23,7 @@ Welcome to the main content creation and modification documentation. Below is th
 
 ## 4. Effect Type Deep Dives
 - [EF_MAGIC_SINGLE_DAMAGE (231)](12_Effect_Type_EF_MAGIC_SINGLE_DAMAGE.md) - Standard single-target magical damage: M.Atk multiplier + flat bonus, optional on-hit debuff, elemental support.
+- [EF_MAGIC_MULTIPLE_DAMAGE (232) & EF_MAGIC_DAMAGE_WITH_ABSORB_HP_MP (235)](13_Effect_Type_Magic_Damage_Variants.md) - Multi-hit magic damage (232) and life/mana drain damage (235). Both extend the base 231 formula.
 
 ## 5. AI Instructions and Workflows
 ### 🚀 Entry Point

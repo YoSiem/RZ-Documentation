@@ -375,14 +375,17 @@ Damage-dealing effects with customizable damage type (physical/magical) and scal
 
 > **For use when creating skills**: The columns below MUST match the effect_type. Refer to this table before generating SQL.
 
-| Effect Type | ID | effect_type | is_physical_act | is_harmful | Typical var Count | Key Points |
+| Effect Type | ID | effect_type | is_physical_act | is_harmful | Active vars | Key Points |
 |---|---|---|---|---|---|---|
-| EF_PARAMETER_AMP | 4 | `4` | `'0'` | `'0'` | var1–18 | Passive buff, bitmask-based |
-| EF_INSTANT_DAMAGE | 1 | `1` | (depends) | `'1'` | var1–10 | Single/AoE damage, immediate |
-| EF_SUMMON_DURATION | ? | `?` | `'0'` | `'0'` | var1–6 | Summon properties, duration |
+| EF_PARAMETER_AMP | 4 | `4` | `'0'` | `'0'` | var1–18 | Passive stat buff, bitmask-based. See [04_Creating_Passive_Skill_EF_PARAMETER_AMP.md](04_Creating_Passive_Skill_EF_PARAMETER_AMP.md) |
+| EF_MAGIC_SINGLE_DAMAGE | 231 | `231` | `'0'` | `'1'` | var1–6 | Single magic hit. var1–3 = M.Atk%, var4–6 = flat. state_id works. See [12_Effect_Type_EF_MAGIC_SINGLE_DAMAGE.md](12_Effect_Type_EF_MAGIC_SINGLE_DAMAGE.md) |
+| EF_MAGIC_MULTIPLE_DAMAGE | 232 | `232` | `'0'` | `'1'` | var1–9 | Multi-hit magic. Same damage as 231 PLUS var7=hit count, var8=count/SLV, var9=delay(s). state_id works. See [13_Effect_Type_Magic_Damage_Variants.md](13_Effect_Type_Magic_Damage_Variants.md) |
+| EF_MAGIC_DAMAGE_WITH_ABSORB_HP_MP | 235 | `235` | `'0'` | `'1'` | var1–12 | Single magic hit + lifesteal. Same damage as 231 PLUS var7–9=HP absorb%, var10–12=MP absorb%. **state_id DISABLED**. See [13_Effect_Type_Magic_Damage_Variants.md](13_Effect_Type_Magic_Damage_Variants.md) |
 | [More to be documented] | – | – | – | – | – | See `1X_Effect_Type_*.md` |
 
-> **Note**: This table is a quick reference. For detailed analysis of each effect type, consult the dedicated documentation file (e.g., `04_Creating_Passive_Skill_EF_PARAMETER_AMP.md`).
+> **Note**: This table is a quick reference. For detailed analysis of each effect type, consult the dedicated documentation file.
+
+> **⚠️ Generation Warning**: `var7` means completely different things in types 232 and 235. In 232 it is hit count (integer, e.g. `3.0000`). In 235 it is HP absorb ratio (float, e.g. `0.2000`). Always check which effect_type you are generating before filling var7+.
 
 ---
 

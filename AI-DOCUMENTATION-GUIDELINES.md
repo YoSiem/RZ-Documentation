@@ -29,7 +29,21 @@ When tasked with analyzing a new `effect_type` or game mechanic:
    - Default/safe fallback values
 4. Cross-reference with existing database records matching that `effect_type`
 
-### 1.3 Documentation Structure Per Effect Type
+### 1.3 Grouping Similar Effect Types
+
+When multiple effect types share the same base mechanic (e.g., the same damage formula), group them in a **single file** instead of creating separate files. This prevents duplication.
+
+**When to group**: Two or more effect types share ≥ 50% of their var layout and column defaults.
+
+**How to group correctly**:
+- Open the file with a **Shared section** documenting common vars (e.g., `var1`–`var6`)
+- Give each effect type its **own clearly separated section** with a bold heading
+- Add a **Comparison Table** at the end showing what each type does differently
+- Use warnings like `⚠️ ONLY FOR TYPE X` when a constraint applies to one type but not the other
+
+> **CRITICAL for generation**: Even when grouped, each effect type is a completely separate game mechanic. When the user asks to create a skill of type 232, generate only 232 columns. When asked for 235, generate only 235 columns. **Never mix var semantics between types** — `var7` means "hit count" in 232 and "HP absorb ratio" in 235. These are completely different values.
+
+### 1.4 Documentation Structure Per Effect Type
 
 Each new `effect_type` documentation MUST include:
 
