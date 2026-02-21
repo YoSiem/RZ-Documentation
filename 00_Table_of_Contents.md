@@ -2,6 +2,8 @@
 
 Welcome to the main content creation and modification documentation. Below is the categorization of the game engine's various systems. Click on the links to navigate to the specific section.
 
+> **🤖 For AI Agents**: Start with [AI-QUICK-START.md](AI-QUICK-START.md) to understand the documentation structure and find your task-specific guide.
+
 ## 1. Architecture and Database
 - [Skill Database Architecture (Master List)](01_Skill_Database_Architecture.md) - The main index for skill columns.
 - [Skill Identifiers and Core Flags](06_Skill_Identifiers_and_Core_Flags.md) - `id`, `elemental`, `is_passive`, `effect_type`.
@@ -19,5 +21,11 @@ Welcome to the main content creation and modification documentation. Below is th
 ## 3. Creating Skills from Scratch (Tutorials)
 - [Complex Passive Skill: EF_PARAMETER_AMP (Effect 4)](04_Creating_Passive_Skill_EF_PARAMETER_AMP.md) - A step-by-step guide to building a powerful passive skill that manipulates secondary stats, elementals, and penetrations.
 
-## 4. Workflows and Generators
-- [Instructions for AI Agents: Generating Rappelz Skills](AGENTS.md) - Best practices and strict mapping rules for prompting an AI to generate skill `INSERT` SQL queries.
+## 4. AI Instructions and Workflows
+### 🚀 Entry Point
+- **[AI Quick Start Guide](AI-QUICK-START.md)** - **READ THIS FIRST!** Task dispatcher and orientation guide for AI agents. Choose your task and follow the recommended reading order.
+
+### 📖 Core Documentation
+- [AI Documentation Guidelines for Rappelz Skill Database](AI-DOCUMENTATION-GUIDELINES.md) - Core principles for creating consistent, non-redundant documentation with proper cross-linking.
+- [Instructions for AI Agents: Skill Generation and Effect Type Documentation](AGENTS.md) - Detailed procedures for generating SQL skills, investigating new effect_types, and documenting game mechanics from source code.
+- [Source Code Investigation Template](SOURCE-CODE-INVESTIGATION-TEMPLATE.md) - Structured template for analyzing C++ source code and documenting effect handlers, variables, and constraints before writing final documentation.

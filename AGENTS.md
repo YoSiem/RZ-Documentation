@@ -1,6 +1,6 @@
-# Instructions for AI Agents: Generating Rappelz Skills (EF_PARAMETER_AMP)
+# Instructions for AI Agents: Rappelz Skill Database Documentation & Generation
 
-> **Context for AI**: If a user asks you to generate new passive skills for their Rappelz server, you must strictly adhere to the rules and architectures defined in this document. Do not invent columns, and always provide valid T-SQL `INSERT` statements.
+> **Context for AI**: This is the master instruction set for all AI agents working on Rappelz skill documentation and SQL generation. Before creating any new skill or documentation, read [AI-DOCUMENTATION-GUIDELINES.md](AI-DOCUMENTATION-GUIDELINES.md) to ensure consistency, avoid duplication, and maintain proper cross-linking. Do not invent columns, and always provide valid T-SQL `INSERT` statements.
 
 ## 1. The Output Format
 When asked to create new skills, you must:
@@ -192,7 +192,209 @@ INSERT INTO [dbo].[SkillResource] (
     0.00, 0.00, 0, 0, 
     512.0000, 0.0000, 0.0500, 2.0000, 0.0000, 0.0200, 0.0000, 0.0000, 0.0000, 0.0000, 
     0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 
-    0.0000, 1530, 'icon_skill_pas_mage_moral_culture', 0, 0.00, 
+    0.0000, 1530, 'icon_skill_pas_mage_moral_culture', 0, 0.00,
     0.00
 );
 ```
+
+---
+
+# Procedure: Investigating and Documenting New Effect Types
+
+> **⚠️ CRITICAL**: When tasked with analyzing a **new effect_type** (e.g., `EF_INSTANT_DAMAGE`, `EF_SUMMON_DURATION`), you MUST follow the procedure outlined in [AI-DOCUMENTATION-GUIDELINES.md](AI-DOCUMENTATION-GUIDELINES.md). This section provides a quick reference checklist.
+
+## Step 1: Confirm the Effect Type ID
+- User provides an effect type number or name (e.g., "effect_type = 5" or "EF_INSTANT_DAMAGE")
+- Confirm you understand what this effect does in-game context
+- Example: `effect_type = 4` = Passive stat amplification, `effect_type = 1` = Active instant damage
+
+## Step 2: Locate Source Code Reference
+Navigate to: `D:\Rappelz_source\program\server\Rappelz-Game-Server`
+
+**Common file patterns to search**:
+- `StructCreature.cpp` / `StructCreature.h` – Entity effect application
+- `SkillEffect.cpp` / `SkillEffect.h` – Skill-specific effect logic
+- `Define_Effect.h` / `Define_*.h` – Effect type definitions and constants
+- `SkillResource.h` – Database column mappings
+
+**Search command pattern**:
+```bash
+find "D:\Rappelz_source" -type f \( -name "*.h" -o -name "*.cpp" \) \
+  | xargs grep -l "EF_PARAMETER_AMP\|effect_type.*=.*4"
+```
+
+## Step 3: Analyze the Handler Function
+
+Once located, document:
+
+| Aspect | What to Record |
+|--------|---|
+| **Function Name** | e.g., `applyPassiveSkillAmplifyEffect` |
+| **Parameter Processing** | Which `var` fields does it read? (e.g., `GetVar(0)` through `GetVar(17)`) |
+| **Type Interpretation** | Are vars treated as `int`, `float`, `bitmask`, `enum`, etc.? |
+| **Range Validation** | Any bounds checks or sanity guards? (e.g., `if (var > 100) var = 100`) |
+| **Side Effects** | Does it trigger other mechanics? (e.g., state application, cooldown reset) |
+
+### Example Analysis Output:
+```
+Effect Type: 4 (EF_PARAMETER_AMP)
+Handler: StructCreature::applyPassiveSkillAmplifyEffect()
+Source: StructCreature.cpp:1250
+
+Variables Used:
+- var1: Bitmask for stat selection (uses Standard Bitmasks table)
+- var2: Base percentage modifier (float, 1.0 = 100%)
+- var3: Level scaling multiplier (float, per skill level)
+- var4–var6: Second stat slot (same structure as var1–3)
+- var7–var9: Extended stats (uses Extended Bitmasks table)
+- var10–var12: Secondary extended slot
+- var13–var18: Additional stat slots (var13/16 = bitmask, var14/17 = base, var15/18 = level scale)
+- var19–var20: UNUSED (safe to set to 0)
+
+Mandatory Columns:
+- is_passive = '0' (negation: 0 means passive)
+- effect_type = 4
+- target = 41 (safe for self/summon)
+- All costs = 0
+```
+
+## Step 4: Find and Reverse-Engineer Existing Examples
+Query the database (or documentation) for existing skills using this effect_type:
+
+```sql
+SELECT id, text_id, var1, var2, var3, var4, var5, var6, ...
+FROM SkillResource
+WHERE effect_type = 4
+LIMIT 3;
+```
+
+For each example:
+- What is the skill's in-game effect?
+- What stat does var1 represent?
+- How are var2 and var3 combined to calculate the buff?
+- Document the pattern
+
+## Step 5: Create Documentation File
+Follow the naming convention: `XX_Effect_Type_[NAME].md`
+
+**Structure** (from [AI-DOCUMENTATION-GUIDELINES.md](AI-DOCUMENTATION-GUIDELINES.md#documentation-structure-per-effect-type)):
+1. Overview of the effect
+2. C++ source file reference
+3. Variable mapping (each var's purpose, type, expected range)
+4. Bitmask/encoding reference (link to existing or explain new)
+5. Mandatory static SQL columns
+6. Practical constraints
+7. Complete working example INSERT
+
+### Example Skeleton:
+```markdown
+# Effect Type: EF_INSTANT_DAMAGE (5)
+
+## Overview
+Applies instantaneous damage to a target, optionally triggering on-hit effects.
+
+## C++ Source
+- **File**: `SkillEffect.cpp`
+- **Function**: `SkillEffect::applyInstantDamage()`
+- **Lines**: 2150–2200
+
+## Variable Mapping
+- **var1**: Damage type flag (0 = Physical, 1 = Magical, 2 = Hybrid)
+- **var2**: Base damage modifier (float, 1.0 = 100% weapon damage)
+- **var3**: Skill level scaling (float, added per level)
+- ...
+
+## Mandatory Columns
+- `effect_type`: 5
+- `is_physical_act`: (1 if var1=0, 0 if var1=1)
+- `is_harmful`: 1
+- `state_id`: [optional – if on-hit buff]
+- ...
+
+## Example: Fireball Spell (ID: 91100)
+...full INSERT statement...
+```
+
+## Step 6: Link to Existing Documentation
+
+**Use relative markdown links to avoid duplication**:
+```markdown
+For stat bitmask values, see [Standard Bitmasks](02_Standard_Bitmasks.md#bitmask-section).
+For extended stat encoding, see [Extended Bitmasks](03_Extended_Bitmasks.md).
+For column definitions, see [Database Architecture](01_Skill_Database_Architecture.md).
+```
+
+## Step 7: Provide a Working Example
+
+At minimum, include ONE realistic skill using this effect_type:
+
+**Requirements**:
+- All 94 SQL columns present in exact order
+- Realistic values (no placeholder text like `[var1_value]`)
+- Valid integer and float types
+- SQL syntax is correct and ready to execute
+- Inline comments explaining key var values
+
+### Template Example:
+```sql
+-- Skill Name: [Skill Description]
+-- Effect: [Brief description]
+-- Key Variables:
+--   var1 = [explanation] (value: N)
+--   var2 = [explanation] (value: N)
+
+INSERT INTO [dbo].[SkillResource] (
+    [id], [text_id], [desc_id], [tooltip_id], [is_valid], [elemental],
+    ... [all 94 columns] ...
+) VALUES (
+    91100, 50091100, 0, 40091100, 1, '0',  -- ID starts at 91000 range
+    ... [all 94 values] ...
+    -- Key vars: var1=1 (magical dmg), var2=2.5 (250% base), var3=0.1 (10% per level)
+    1.0000, 2.5000, 0.1000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, ...
+);
+```
+
+## Step 8: Update Table of Contents
+After creating a new effect_type documentation file:
+
+1. Add entry to `00_Table_of_Contents.md`
+2. Follow numbering: `12–20` are reserved for effect_type deep dives
+3. Provide one-line description
+4. Use relative link
+
+**Example**:
+```markdown
+### [12. Effect Type: EF_INSTANT_DAMAGE](12_Effect_Type_EF_INSTANT_DAMAGE.md)
+Damage-dealing effects with customizable damage type (physical/magical) and scaling.
+```
+
+---
+
+# Quick Reference: Mandatory Columns by Effect Type
+
+> **For use when creating skills**: The columns below MUST match the effect_type. Refer to this table before generating SQL.
+
+| Effect Type | ID | effect_type | is_physical_act | is_harmful | Typical var Count | Key Points |
+|---|---|---|---|---|---|---|
+| EF_PARAMETER_AMP | 4 | `4` | `'0'` | `'0'` | var1–18 | Passive buff, bitmask-based |
+| EF_INSTANT_DAMAGE | 1 | `1` | (depends) | `'1'` | var1–10 | Single/AoE damage, immediate |
+| EF_SUMMON_DURATION | ? | `?` | `'0'` | `'0'` | var1–6 | Summon properties, duration |
+| [More to be documented] | – | – | – | – | – | See `1X_Effect_Type_*.md` |
+
+> **Note**: This table is a quick reference. For detailed analysis of each effect type, consult the dedicated documentation file (e.g., `04_Creating_Passive_Skill_EF_PARAMETER_AMP.md`).
+
+---
+
+# Procedure Checklist: Before Submitting Documentation
+
+- [ ] Source code file path and function name documented
+- [ ] All `var1`–`var20` explained or marked "UNUSED"
+- [ ] Safe default/fallback values specified
+- [ ] At least ONE complete, syntax-valid INSERT statement provided
+- [ ] No information duplicated across files (use links instead)
+- [ ] All relative links tested and functional
+- [ ] Bitmask tables either linked to existing docs or justified as new
+- [ ] SQL column order matches [AGENTS.md](AGENTS.md) schema (94 columns)
+- [ ] File named according to convention: `XX_Effect_Type_[NAME].md`
+- [ ] Table of Contents updated if file is new
+- [ ] Follows [AI-DOCUMENTATION-GUIDELINES.md](AI-DOCUMENTATION-GUIDELINES.md) best practices
