@@ -279,12 +279,14 @@ Follow the naming convention: `XX_Effect_Type_[NAME].md`
 
 **Structure** (from [AI-DOCUMENTATION-GUIDELINES.md](AI-DOCUMENTATION-GUIDELINES.md#documentation-structure-per-effect-type)):
 1. Overview of the effect
-2. C++ source file reference
+2. Source reference (file + function name only — **no C++ snippets**)
 3. Variable mapping (each var's purpose, type, expected range)
 4. Bitmask/encoding reference (link to existing or explain new)
 5. Mandatory static SQL columns
 6. Practical constraints
 7. Complete working example INSERT
+
+> **⚠️ No C++ snippets in documentation.** Read the source to understand the logic, then document only the conclusions in plain language. Paste C++ code only when asked explicitly by the user.
 
 ### Example Skeleton:
 ```markdown
@@ -293,10 +295,9 @@ Follow the naming convention: `XX_Effect_Type_[NAME].md`
 ## Overview
 Applies instantaneous damage to a target, optionally triggering on-hit effects.
 
-## C++ Source
-- **File**: `SkillEffect.cpp`
-- **Function**: `SkillEffect::applyInstantDamage()`
-- **Lines**: 2150–2200
+## Source Reference
+- **File**: `Game/Skill/StructSkill.cpp`
+- **Function**: `StructSkill::INSTANT_DAMAGE()`
 
 ## Variable Mapping
 - **var1**: Damage type flag (0 = Physical, 1 = Magical, 2 = Hybrid)

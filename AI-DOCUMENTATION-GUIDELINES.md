@@ -36,12 +36,14 @@ Each new `effect_type` documentation MUST include:
 | Section | Content |
 |---------|---------|
 | **1. Overview** | Brief description of what this effect does in-game |
-| **2. C++ Source Analysis** | Reference to the source file and function name |
+| **2. Source Reference** | File name and function name only (e.g., `StructSkill.cpp → SINGLE_MAGICAL_DAMAGE()`) — no C++ code snippets |
 | **3. Variable Mapping** | Exact explanation of `var1`–`var20` |
 | **4. Bitmask/Encoding Reference** | Link to or embed any special bitmask tables (avoid duplication) |
 | **5. Mandatory Static Columns** | Unchanging SQL column defaults for this effect |
 | **6. Practical Constraints** | Value ranges, forbidden combinations, etc. |
 | **7. Example INSERT Statement** | A fully-formed, working example |
+
+> **Note on C++ snippets**: Do NOT paste C++ source code into documentation files. The source files are available locally for reference during investigation. Only record the **function name**, **file path**, and the **conclusions** (which vars are used, what they mean). Documentation is for SQL users, not C++ developers.
 
 ---
 
