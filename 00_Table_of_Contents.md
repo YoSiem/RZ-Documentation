@@ -21,7 +21,10 @@ Welcome to the main content creation and modification documentation. Below is th
 ## 3. Creating Skills from Scratch (Tutorials)
 - [Complex Passive Skill: EF_PARAMETER_AMP (Effect 4)](04_Creating_Passive_Skill_EF_PARAMETER_AMP.md) - A step-by-step guide to building a powerful passive skill that manipulates secondary stats, elementals, and penetrations.
 
-## 4. AI Instructions and Workflows
+## 4. Effect Type Deep Dives
+- [EF_MAGIC_SINGLE_DAMAGE (231)](12_Effect_Type_EF_MAGIC_SINGLE_DAMAGE.md) - Standard single-target magical damage: M.Atk multiplier + flat bonus, optional on-hit debuff, elemental support.
+
+## 5. AI Instructions and Workflows
 ### 🚀 Entry Point
 - **[AI Quick Start Guide](AI-QUICK-START.md)** - **READ THIS FIRST!** Task dispatcher and orientation guide for AI agents. Choose your task and follow the recommended reading order.
 
